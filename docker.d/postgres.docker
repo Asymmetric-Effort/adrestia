@@ -1,0 +1,30 @@
+FROM ubuntu:latest
+USER root
+ENV POSTGRES_USER adrestia
+ENV POSTGRES_PASSWORD password
+ENV POSTGRES_DB adrestia
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANGUAGE="en_US:en"
+ENV LC_ALL=C.UTF-8
+ENV LANG="en_US.UTF-8"
+
+COPY ./docker.d/scripts/*.sh /usr/bin/
+
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get install --no-install-recommends -y \
+        postgresql-14 \
+        ca-certificates
+
+RUN echo "listen_addresses='*'" >> \
+    "/etc/postgresql/14/main/conf.d/listen.conf"
+
+RUN echo "host    all             all             0.0.0.0/0               scram-sha-256" >> /etc/postgresql/14/main/pg_hba.conf
+
+VOLUME [ "/var/lib/postgresql/14" ]
+
+USER postgres
+
+ENTRYPOINT [ "/usr/bin/entrypoint.sh" ]
