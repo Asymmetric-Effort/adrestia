@@ -1,6 +1,8 @@
 import {userRole} from './userRoles';
 import {NextFunction, Request, Response} from 'express';
 import {HttpException} from "../exceptions/httpExceptions";
+import emitMetric from "../observability/emitMetric";
+import {httpStatus} from "../exceptions/httpStatus";
 
 export default function authenticated(role: userRole): MethodDecorator {
     /*
@@ -35,19 +37,20 @@ export default function authenticated(role: userRole): MethodDecorator {
                 // if (!userHasRole(scopes)){
                 //     throw new Unauthorized(`user does not have required role (${role})`)
                 // }
-                console.log("Authentication passed")
+                emitMetric('application.security.authentication',1,['status:ok'])
                 return originalMethod.call(this, req, res, next);
-            } catch (error) {
-                console.log(`Authentication error: ${error}`)
-                if (error instanceof HttpException) {
-                    return res.status(error.code).json({
-                        error: error.name,
-                        message: error.message
+            } catch (e) {
+                emitMetric('application.security.authentication',1,['status:error',`error:${e}`])
+                console.log(`Authentication error: ${e}`)
+                if (e instanceof HttpException) {
+                    return res.status(e.code).json({
+                        error: e.name,
+                        message: e.message
                     })
                 } else {
-                    return res.status(500).json({
-                        error: 'unknownError',
-                        message: error
+                    return res.status(httpStatus.InternalError).json({
+                        error: 'unhandledError',
+                        message: e
                     });
                 }
             }

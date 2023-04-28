@@ -1,48 +1,66 @@
+import {httpStatus, httpStatusText} from "./httpStatus";
+import emitMetric from "../observability/emitMetric";
+
 export class HttpException extends Error {
-    public name = 'undefined';
-    public code: number = 500; //Default to server error.
-    constructor(message: string) {
+    private readonly _name: httpStatusText;
+    private readonly _code: httpStatus;
+
+    constructor(message: string, name: httpStatusText, code: httpStatus) {
         super(message);
+        this._name = name;
+        this._code = code;
+        emitMetric(
+            'http.exception',
+            1,
+            [
+                `status:${this._code}`,
+                `name:${this._name}`,
+                `message:'${this.message}'`
+            ]);
     }
+
+    public get name(): string {
+        return this._name;
+    }
+
+    public get code(): httpStatus {
+        return this._code;
+    }
+
 }
 
 export class BadRequest extends HttpException {
     constructor(message: string) {
-        super(message);
-        this.name = "BadRequest";
-        this.code = 400;
+        super(message, httpStatusText.BadRequest, httpStatus.BadRequest);
     }
 }
 
 export class NotAuthenticated extends HttpException {
     constructor(message: string) {
-        super(message);
-        this.name = "NotAuthenticated";
-        this.code = 401;
+        super(message, httpStatusText.NotAuthenticated, httpStatus.NotAuthenticated);
     }
 }
 
 export class Unauthorized extends HttpException {
     constructor(message: string) {
-        super(message);
-        this.name = "Unauthorized";
-        this.code = 403;
+        super(message, httpStatusText.Unauthorized, httpStatus.Unauthorized);
     }
 }
 
 export class NotFound extends HttpException {
     constructor(message: string) {
-        super(message);
-        this.name = "NotFound";
-        this.code = 404;
+        super(message, httpStatusText.NotFound, httpStatus.NotFound);
     }
 }
 
-
-export class ServerError extends HttpException {
+export class MethodNotAllowed extends HttpException {
     constructor(message: string) {
-        super(message);
-        this.name = "ServerError";
-        this.code = 500;
+        super(message, httpStatusText.MethodNotAllowed, httpStatus.MethodNotAllowed);
+    }
+}
+
+export class InternalError extends HttpException {
+    constructor(message: string) {
+        super(message, httpStatusText.InternalError, httpStatus.InternalError);
     }
 }

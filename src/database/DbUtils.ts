@@ -1,8 +1,8 @@
-import DbBase from "./DbBase";
+import Base from "./Base";
 import e from "express";
-import {BadRequest} from "../exceptions/httpExceptions";
+import {BadRequest, InternalError} from "../exceptions/httpExceptions";
 
-export default class DbUtils extends DbBase {
+export default class DbUtils extends Base {
     protected readonly defaultLimit: number = 10;
     protected readonly defaultOffset: number = 0;
     protected readonly maxLimit: number = 1000;
@@ -12,12 +12,21 @@ export default class DbUtils extends DbBase {
         super();
     }
 
-    ping(): boolean {
-        return this.connection.isConnected;
+    public ping(): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            try {
+                if(this.connection.isConnected) {
+                    resolve(true);
+                }else{
+                    throw Error('database is not connected')
+                }
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     protected getLimit(req: e.Request): number {
-        console.log('getLimit() start');
         if ('limit' in req.body) {
             const limit = req.body.limit;
             if (typeof limit === "number") {
@@ -37,7 +46,6 @@ export default class DbUtils extends DbBase {
     }
 
     protected getOffset(req: e.Request): number {
-        console.log('getOffset() start');
         if ('offset' in req.body) {
             const offset = req.body.offset;
             if (typeof offset === "number") {

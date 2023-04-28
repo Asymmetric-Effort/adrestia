@@ -1,29 +1,31 @@
-import {Request, Response} from "express";
+import Api from "./Api";
+import {
+    Request,
+    Response
+} from "express";
 import Database from '../database/database';
-import apiBase from "./apiBase";
 import httpMetrics from "../observability/httpMetrics";
+import emitMetric from "../observability/emitMetric";
+import {httpStatus} from "../exceptions/httpStatus";
 
-export default class apiHealthCheck extends apiBase {
-    protected db: Database;
+export default class apiHealthCheck extends Api {
     constructor(db: Database) {
         super(db);
-        console.log("apiHealthCheck: initializing");
-        if (this.db.ping()) {
-            console.log("apiHealthCheck: ok");
-        }else{
-            throw Error('apiHealthCheck: failed (db)')
-        }
+        apiHealthCheck.db.ping().then((status)=>{
+            emitMetric('application.api.healthcheck',1,[`status:${status}`]);
+        }).catch((error)=>{
+            emitMetric('application.api.healthcheck',0,['status:error',`error:${error}}`]);
+        }).finally();
     }
 
-    @httpMetrics('healthcheck')
-    fetch(req: Request, res: Response): void {
-        console.log("fetch properties");
-        if (this.db.ping()) {
-            console.log({api: 'health', status: 'ok'})
-            res.send(200);
-        } else {
-            console.log({api: 'health', status: 'fail'})
-            res.send(500);
-        }
+    @httpMetrics('application.api.healthcheck')
+    public read(req: Request, res: Response): void {
+        emitMetric('application.api.healthcheck', 1, [`status:starting`]);
+        apiHealthCheck.db.ping().then((status) => {
+            emitMetric('application.api.healthcheck', 1, [`status:${status}`]);
+            res.send(httpStatus.OK).json();
+        }).catch((e) => {
+            emitMetric('application.api.healthcheck', 0, ['status:error', `error:${e}}`]);
+        }).finally();
     }
 }

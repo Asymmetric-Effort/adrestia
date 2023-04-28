@@ -5,6 +5,7 @@
   "license": "MIT",
   "version": "1.0.0",
   "dependencies": {
+    "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
@@ -31,11 +32,11 @@
   },
   "main": "srs/index.ts",
   "scripts": {
-    "start": "DB_SERVER=172.16.10.2 DB_PORT=5432 DB_USER=adrestia DB_PASS=password DB_NAME=adrestia APP_PORT=3000 node dist/index.js",
-    "dev": "DB_SERVER=172.16.10.2 DB_PORT=5432 DB_USER=adrestia DB_PASS=password DB_NAME=adrestia npx ts-node-dev --respawn src/index.ts",
+    "start": "DB_SERVER=192.168.3.190 DB_PORT=5432 DB_USER=adrestia DB_PASS=password DB_NAME=postgres APP_PORT=3000 node dist/index.js",
+    "dev": "DB_SERVER=192.168.3.190 DB_PORT=5432 DB_USER=adrestia DB_PASS=password DB_NAME=postgres APP_PORT=3000 npx ts-node-dev --respawn src/index.ts",
     "build": "tsc",
     "lint": "eslint src/**/*.ts",
-    "test": "DB_SERVER=172.16.10.2 DB_PORT=5432 DB_USER=adrestia DB_PASS=password DB_NAME=adrestia jest",
+    "test": "DB_SERVER=192.168.3.190 DB_PORT=5432 DB_USER=adrestia DB_PASS=password DB_NAME=postgres jest",
     "bump_version": "npm version patch",
     "db-kill": "docker kill adrestiadb",
     "db-build": "docker build -t adrestia-db:local --file docker.d/postgres.docker . && mkdir -p storage/db || true; ",
@@ -44,6 +45,6 @@
     "db-user": "docker exec -it adrestiadb psql -c \"create user adrestia with password 'password';\"",
     "db-extension": "docker exec -it adrestiadb psql -c \"create extension if not exists \\\"uuid-ossp\\\"\"",
     "db-start": "npm run db-build && npm run db-kill && npm run db-run && npm run db-init && npm run db-migrate",
-    "db-migrate": "DB_SERVER=172.16.10.2 DB_PORT=5432 DB_USER=adrestia DB_PASS=password DB_NAME=adrestia ts-node src/db-migration.ts"
+    "db-migrate": "DB_SERVER=192.168.3.190 DB_PORT=5432 DB_USER=adrestia DB_PASS=password DB_NAME=postgres ts-node src/db-migration.ts"
   }
 }

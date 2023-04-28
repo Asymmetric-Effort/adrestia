@@ -6,91 +6,90 @@ import authenticated from "../security/authenticated";
 import httpMetrics from "../observability/httpMetrics";
 import {userRole} from "../security/userRoles";
 import Database from '../database/database';
-import apiBase from "./apiBase";
+import Api from "./Api";
 import sqlProperties from "../model/sqlProperties"
 import {
     BadRequest,
-    ServerError
+    InternalError
 } from "../exceptions/httpExceptions";
 import {isNull} from "util";
 
-export default class apiProperties extends apiBase {
+export default class apiProperties extends Api {
 
     constructor(db: Database) {
         super(db);
     }
 
-    @httpMetrics('apiProperties.fetch')
+    @httpMetrics('application.api.Properties.create')
+    @authenticated(userRole.Admin)
+    create(req: Request, res: Response) {
+        /*
+         * Create a new key-value property record.
+         */
+        const property = new sqlProperties()
+        try {
+            property.key = this.getValidString(req, 'key', true);
+            property.value = this.getValidString(req, 'value', true);
+            property.readonly = this.getValidBoolean(req, 'readonly', false, false);
+            apiProperties.db.create(property).then(() => {
+                res.send(200).json();
+            }).catch((error) => {
+                throw new InternalError(`create failed: ${error}`);
+            });
+        } catch (error) {
+            this.handleError(res, error);
+        }
+    }
+
+    @httpMetrics('application.api.Properties.read')
     @authenticated(userRole.Any)
-    async fetch(req: Request, res: Response) {
-        const result = await this.db.fetch(sqlProperties, req)
+    async read(req: Request, res: Response) {
+        /*
+         * Return a set of key-value property records.
+         */
+        const result = await apiProperties.db.read(sqlProperties, req)
             .then((r: object[]): object[] => r)
             .catch((e) => {
                 console.log(e);
                 return {}
             })
         res.json(result);
-        console.log(`returning properties...`)
     }
-
-    @httpMetrics('apiProperties.create')
-    @authenticated(userRole.Admin)
-    create(req: Request, res: Response) {
-        const property = new sqlProperties()
-        try {
-            property.key = req.body.key?.toString().trim() ?? null;
-            property.value = req.body.value?.toString().trim() ?? null;
-            property.readonly = req.body.readonly ? (req.body.readonly == 'true') : false;
-            if (isNull(property.key)
-            ) {
-                throw new BadRequest('missing key')
-            }
-            if (isNull(property.value)) {
-                throw new BadRequest('missing value')
-            }
-            console.log("data validated")
-            this.db.create(property).then(() => {
-                console.log(`created property ${property.key}`)
-                res.send(200).json();
-            }).catch((error) => {
-                throw new ServerError(`create failed: ${error}`);
-            });
-        } catch (error) {
-            this.handleError(res, error);
-        }
-    }
-
-    @httpMetrics('apiProperties.update')
+    @httpMetrics('application.api.Properties.update')
     @authenticated(userRole.Admin)
     update(req: Request, res: Response) {
+        /*
+         * Update a new key-value property record (if not read-only)
+         */
         try {
             const property = new sqlProperties();
-            property.readonly = req.body.readonly ? (req.body.readonly == 'true') : false;
-            property.value = req.body.value?.toString().trim() ?? null;
-            property.key = req.body.key?.toString().trim() ?? null;
+            property.key = this.getValidString(req,'key',true);
+            property.value = this.getValidString(req,'value',true);
+            property.readonly = this.getValidBoolean(req,'readonly',false,false);
             if (isNull(property.value)) {
                 throw new BadRequest('missing value')
             }
             if (isNull(property.key)) {
                 throw new BadRequest('missing key')
             }
-            console.log("data validated")
-            this.db.update(property).then(() => {
-                console.log(`created property ${property.key}`)
+            apiProperties.db.update(property).then(() => {
                 res.send(200).json();
             }).catch((error) => {
-                throw new ServerError(`create failed: ${error}`);
+                throw new InternalError(`create failed: ${error}`);
             });
         } catch (error) {
             this.handleError(res, error);
         }
     }
 
-    @httpMetrics('apiProperties.delete')
+    @httpMetrics('application.api.Properties.delete')
     @authenticated(userRole.Admin)
     delete(req: Request, res: Response) {
-        const result = this.db.delete(sqlProperties, 'key', req);
-        if (result) {
+        /*
+         * Delete a new key-value property record.
+         */
+        const result: number = apiProperties.db.delete(sqlProperties, 'key', req);
+        if (result > 0) {
             res.send(200).json();
         } else {
             res.send(404).json();
