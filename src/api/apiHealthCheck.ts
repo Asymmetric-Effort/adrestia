@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import Database from './../database';
+import Database from '../database/database';
 import apiBase from "./apiBase";
 import httpMetrics from "../observability/httpMetrics";
 

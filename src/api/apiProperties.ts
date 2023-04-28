@@ -5,7 +5,7 @@ import {
 import authenticated from "../security/authenticated";
 import httpMetrics from "../observability/httpMetrics";
 import {userRole} from "../security/userRoles";
-import Database from './../database';
+import Database from '../database/database';
 import apiBase from "./apiBase";
 import sqlProperties from "../model/sqlProperties"
 import {
@@ -75,7 +75,7 @@ export default class apiProperties extends apiBase {
                 throw new BadRequest('missing key')
             }
             console.log("data validated")
-            this.db.create(property).then(() => {
+            this.db.update(property).then(() => {
                 console.log(`created property ${property.key}`)
                 res.send(200).json();
             }).catch((error) => {

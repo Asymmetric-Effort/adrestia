@@ -1,4 +1,4 @@
-import Database from "./database";
+import Database from "./database/database";
 import {getConnection} from "typeorm";
 
 console.log("Database Migration starting");

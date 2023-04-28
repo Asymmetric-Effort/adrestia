@@ -1,4 +1,4 @@
-import Database from './../database';
+import Database from '../database/database';
 import {Request, Response} from "express";
 import {BadRequest, HttpException} from "../exceptions/httpExceptions";
 

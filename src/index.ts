@@ -1,5 +1,5 @@
 import express, {Request, Response} from "express";
-import Database from './database';
+import Database from './database/database';
 import apiHealthCheck from './api/apiHealthCheck';
 import apiProperties from './api/apiProperties';
 
