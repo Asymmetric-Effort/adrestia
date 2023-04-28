@@ -6,12 +6,12 @@ import {
     JoinColumn,
 } from "typeorm";
 import {v4 as uuid} from "uuid";
-import sqlEntityTypes from "./entity-type";
+import sqlEntityTypes from "./sqlEntityType";
 import sqlPerson from "./person";
 import sqlNoteSet from "./note-set";
-import sqlTagSet from "./tag-set";
-import sqlDependencyList from "./dependency-list";
-import {sqlTeamAssociation} from "./team_association";
+import sqlTagSet from "./sqlTagSet";
+import sqlDependencyList from "./sqlDependencyList";
+import sqlTeamAssociation from "./sqlTeamAssociation";
 
 @DbEntity('entity')
 export default class sqlEntity {

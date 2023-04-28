@@ -6,7 +6,7 @@ import {
     JoinColumn
 } from 'typeorm';
 import {v4 as uuid} from "uuid";
-import sqlEntity from './entity';
+import sqlEntity from './sqlEntity';
 
 
 @DbEntity('dependency_list')

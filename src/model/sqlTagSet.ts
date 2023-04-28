@@ -4,7 +4,7 @@ import {
     ManyToOne,
     JoinColumn
 } from 'typeorm';
-import sqlTag from './tag';
+import sqlTag from './sqlTag';
 
 @DbEntity('tag_set')
 export default class sqlTagSet {

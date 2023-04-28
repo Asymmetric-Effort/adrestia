@@ -1,15 +1,12 @@
 import {
     Entity as DbEntity,
     Column,
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
 } from "typeorm";
 
 @DbEntity('properties')
 export default class sqlProperties {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
-
-    @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
+    @PrimaryColumn({ type: 'varchar', length: 255, nullable: false, unique: true })
     key: string;
 
     @Column({type: 'varchar', length: 255, nullable: false})

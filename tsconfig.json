@@ -4,6 +4,7 @@
     "target": "es5",
     "sourceMap": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
     "esModuleInterop": true,
   },
   "exclude": [

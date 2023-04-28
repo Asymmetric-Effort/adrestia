@@ -4,7 +4,7 @@ import {
     ManyToOne,
     Unique
 } from 'typeorm';
-import sqlTag from './tag';
+import sqlTag from './sqlTag';
 
 @DbEntity('change_tag')
 @Unique(['tag'])

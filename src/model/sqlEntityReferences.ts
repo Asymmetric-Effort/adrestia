@@ -6,7 +6,7 @@ import {
     JoinColumn
 } from 'typeorm';
 import sqlReference from './reference';
-import sqlEntity from "./entity";
+import sqlEntity from "./sqlEntity";
 
 @DbEntity('entity_references')
 export default class sqlEntityReferences {
