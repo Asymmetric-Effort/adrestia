@@ -1,8 +1,8 @@
 import {userRole} from './userRoles';
 import {NextFunction, Request, Response} from 'express';
-import {HttpException} from "../exceptions/httpExceptions";
+import {HttpException} from "../http/httpExceptions";
 import emitMetric from "../observability/emitMetric";
-import {httpStatus} from "../exceptions/httpStatus";
+import {httpStatus} from "../http/httpStatus";
 
 export default function authenticated(role: userRole): MethodDecorator {
     /*

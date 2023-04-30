@@ -3,8 +3,8 @@ import MetricEmitter from './MetricEmitter';
 import {NextFunction, Request, Response} from 'express';
 import {
     HttpException
-} from "../exceptions/httpExceptions";
-import {httpStatus} from "../exceptions/httpStatus";
+} from "../http/httpExceptions";
+import {httpStatus} from "../http/httpStatus";
 
 export default function httpMetrics(metric: string): MethodDecorator {
     /*

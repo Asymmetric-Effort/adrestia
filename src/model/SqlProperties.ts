@@ -5,13 +5,13 @@ import {
 } from "typeorm";
 
 @DbEntity('properties')
-export default class sqlProperties {
+export default class SqlProperties {
     @PrimaryColumn({ type: 'varchar', length: 255, nullable: false, unique: true })
-    key: string;
+    public key: string;
 
     @Column({type: 'varchar', length: 255, nullable: false})
-    value: string;
+    public value: string;
 
     @Column({type: 'boolean', default: false, nullable: false})
-    readonly: boolean;
+    public readonly: boolean;
 }
