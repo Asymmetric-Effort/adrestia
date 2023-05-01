@@ -1,5 +1,6 @@
 export default class MetricEmitter {
-    private readonly metric: string;
+    private metric: string;
+
     constructor(metric: string) {
         this.metric = metric;
         this.send = this.send.bind(this);
